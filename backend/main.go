@@ -152,8 +152,11 @@ func main() {
         port = "8080"
     }
 
+    // Bind to 0.0.0.0 for cloud deployments (Render, Heroku, etc.)
+    addr := "0.0.0.0:" + port
+    
     httpServer := &http.Server{
-        Addr:           ":" + port,
+        Addr:           addr,
         Handler:        srv.Router(),
         ReadTimeout:    10 * time.Second,
         WriteTimeout:   10 * time.Second,
@@ -179,7 +182,7 @@ func main() {
         }
     }()
 
-    fmt.Printf("🚀 Blockchain Wallet Server listening on http://localhost:%s\n", port)
+    fmt.Printf("🚀 Blockchain Wallet Server listening on %s\n", addr)
     fmt.Println("📡 API endpoints available at /api")
     
     if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
