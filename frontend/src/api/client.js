@@ -1,4 +1,5 @@
-const API_BASE = '/api';
+// Use environment variable for API base URL, fallback to proxy in development
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 export const api = {
   // Wallet operations
