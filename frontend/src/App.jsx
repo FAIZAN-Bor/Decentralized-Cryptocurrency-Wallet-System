@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { WalletProvider, useWallet } from './context/WalletContext'
+import { NavigationProvider, useNavigation } from './context/NavigationContext'
 import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -14,7 +15,7 @@ import AdminPanel from './pages/AdminPanel'
 
 function AppContent() {
   const { currentWallet } = useWallet()
-  const [currentPage, setCurrentPage] = useState('dashboard')
+  const { currentPage, setCurrentPage } = useNavigation()
 
   if (!currentWallet) {
     return <Login />
@@ -58,7 +59,9 @@ function AppContent() {
 export default function App() {
   return (
     <WalletProvider>
-      <AppContent />
+      <NavigationProvider>
+        <AppContent />
+      </NavigationProvider>
     </WalletProvider>
   )
 }

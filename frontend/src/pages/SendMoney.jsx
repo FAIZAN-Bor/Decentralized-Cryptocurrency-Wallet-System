@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { useWallet } from '../context/WalletContext';
+import { useNavigation } from '../context/NavigationContext';
 
 export default function SendMoney() {
   const { currentWallet, privateKey } = useWallet();
+  const { pageData } = useNavigation();
   const [formData, setFormData] = useState({
     receiverId: '',
     amount: '',
     note: '',
   });
 
-  // Pre-fill receiver from URL params
+  // Pre-fill receiver from navigation data
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const receiverFromUrl = params.get('to');
-    const nameFromUrl = params.get('name');
-    if (receiverFromUrl) {
+    if (pageData && pageData.receiverId) {
       setFormData(prev => ({
         ...prev,
-        receiverId: receiverFromUrl,
-        note: nameFromUrl ? `Payment to ${nameFromUrl}` : ''
+        receiverId: pageData.receiverId,
+        note: pageData.receiverName ? `Payment to ${pageData.receiverName}` : ''
       }));
     }
-  }, []);
+  }, [pageData]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');

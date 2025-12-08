@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
+import { useNavigation } from '../context/NavigationContext';
 import { api } from '../api/client';
 
 export default function Beneficiaries() {
   const { currentWallet } = useWallet();
+  const { navigateTo } = useNavigation();
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newBeneficiary, setNewBeneficiary] = useState({
@@ -119,7 +121,7 @@ export default function Beneficiaries() {
 
   const handleQuickSend = (walletId, name) => {
     // Navigate to send money page with pre-filled data
-    window.location.href = `/send?to=${encodeURIComponent(walletId)}&name=${encodeURIComponent(name)}`;
+    navigateTo('send', { receiverId: walletId, receiverName: name });
   };
 
   // Get unique categories from beneficiaries
