@@ -29,7 +29,15 @@ export default function Beneficiaries() {
     setLoading(true);
     try {
       const data = await api.getBeneficiaries(currentWallet.wallet_id);
-      setBeneficiaries(Array.isArray(data) ? data : []);
+      // Map backend field names to frontend expectations
+      const mappedData = Array.isArray(data) ? data.map(ben => ({
+        id: ben.id,
+        beneficiary_wallet_id: ben.wallet_id,
+        beneficiary_name: ben.name,
+        relationship: ben.relationship,
+        created_at: ben.created_at
+      })) : [];
+      setBeneficiaries(mappedData);
     } catch (err) {
       console.error('Failed to load beneficiaries', err);
       setBeneficiaries([]);
@@ -110,7 +118,8 @@ export default function Beneficiaries() {
   };
 
   const handleQuickSend = (walletId, name) => {
-    window.location.href = `/send?to=${walletId}&name=${encodeURIComponent(name)}`;
+    // Navigate to send money page with pre-filled data
+    window.location.href = `/send?to=${encodeURIComponent(walletId)}&name=${encodeURIComponent(name)}`;
   };
 
   // Get unique categories from beneficiaries
