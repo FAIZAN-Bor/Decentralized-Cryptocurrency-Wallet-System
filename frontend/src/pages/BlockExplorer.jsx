@@ -84,24 +84,39 @@ export default function BlockExplorer() {
       return;
     }
     
+    // Check if there are pending transactions
+    if (pendingTransactions.length === 0) {
+      const confirm = window.confirm(
+        '⚠️ No pending transactions to mine.\n\n' +
+        'Mining will create a block with only the mining reward (50 coins).\n\n' +
+        'Continue?'
+      );
+      if (!confirm) return;
+    }
+    
     setMining(true);
     try {
-      console.log('Starting mining process...');
+      console.log(`Starting mining process... (${pendingTransactions.length} pending transactions)`);
       
-      // Create a timeout promise (60 seconds max for mining)
+      // Create a timeout promise (120 seconds max for mining - increased for difficulty 00000)
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Mining timeout - took too long')), 60000)
+        setTimeout(() => reject(new Error('Mining timeout - took too long (>2 minutes). Try reducing difficulty in .env')), 120000)
       );
       
       // Race between mining and timeout
-      await Promise.race([
+      const result = await Promise.race([
         api.mine(currentWallet.wallet_id),
         timeoutPromise
       ]);
       
       console.log('Mining successful, reloading data...');
       await loadData();
-      alert('🎉 Block mined successfully! You earned 50 coins as mining reward!');
+      
+      const txCount = result.transactions?.length || 0;
+      alert(`🎉 Block #${result.index} mined successfully!\n\n` +
+            `💰 Mining reward: 50 coins\n` +
+            `📦 Transactions mined: ${txCount}\n` +
+            `🔗 Block hash: ${result.hash.substring(0, 16)}...`);
     } catch (err) {
       console.error('Mining error:', err);
       alert('⚠️ Mining failed: ' + err.message);
@@ -175,7 +190,14 @@ export default function BlockExplorer() {
               <span className="inline-block animate-spin mr-2">⛏</span> Mining...
             </>
           ) : (
-            <>⛏ Mine Block</>
+            <>
+              ⛏ Mine Block
+              {pendingTransactions.length > 0 && (
+                <span className="ml-2 px-2 py-1 bg-white text-green-700 rounded-lg text-sm">
+                  {pendingTransactions.length} pending
+                </span>
+              )}
+            </>
           )}
         </button>
       </div>

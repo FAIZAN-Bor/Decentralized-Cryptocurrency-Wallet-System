@@ -195,11 +195,16 @@ func (bc *Blockchain) Mine(nonceStart int64, minerWalletID string) Block {
 
     nonce := nonceStart
     maxIterations := int64(10000000) // Prevent infinite loop - 10 million attempts
+    hashAttempts := int64(0)
+    
     for i := int64(0); i < maxIterations; i++ {
         b.Nonce = nonce
         h := bc.hashBlock(b)
+        hashAttempts++
+        
         if strings.HasPrefix(h, bc.DifficultyPref) {
             b.Hash = h
+            fmt.Printf("⛏️  Block mined! Found valid hash after %d attempts (nonce: %d)\n", hashAttempts, nonce)
             break
         }
         nonce++
@@ -207,6 +212,7 @@ func (bc *Blockchain) Mine(nonceStart int64, minerWalletID string) Block {
     
     // If we didn't find a valid hash, use what we have (shouldn't happen with 00000 difficulty)
     if b.Hash == "" {
+        fmt.Printf("⚠️  Warning: Mining reached max iterations (%d), using current hash\n", maxIterations)
         b.Hash = bc.hashBlock(b)
     }
 
