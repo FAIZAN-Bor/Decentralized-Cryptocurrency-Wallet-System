@@ -11,8 +11,11 @@ import (
 )
 
 const (
-    MiningReward = 50   // Coins rewarded for mining a block
-    FaucetAmount = 1000 // Initial coins for new wallets
+    MiningReward     = 50   // Coins rewarded for mining a block
+    FaucetAmount     = 1000 // Initial coins for new wallets
+    ZakatNisab       = 500  // Minimum balance required for zakat eligibility
+    ZakatRate        = 0.025 // 2.5% zakat rate
+    ZakatIntervalDays = 30   // Zakat applied every 30 days
 )
 
 type Transaction struct {

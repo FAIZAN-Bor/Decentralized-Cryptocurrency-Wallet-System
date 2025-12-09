@@ -140,6 +140,11 @@ func main() {
     srv := api.NewServer(bc, walletStore, txService, loggingService, db)
 
     // Start Zakat scheduler
+    // Zakat Rules:
+    // - Only applies to wallets with balance >= 500 (Nisab threshold)
+    // - Deducts 2.5% every 30 days
+    // - Checks every 24 hours (configurable in zakat_service.go)
+    // - For testing, change ticker to 5 * time.Minute in zakat_service.go
     zakatService.Start()
     defer zakatService.Stop()
 
